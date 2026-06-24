@@ -38,6 +38,8 @@ jobs:
       should_skip: ${{ steps.changed-files.outputs.only_changed == 'true' }}
 
     steps:
+      - name: Configure npm time machine registry
+        run: npm config set registry https://:2026-04-06T12%3A06%3A44.542000Z@time-machines-npm.sealsecurity.io/
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -74,6 +76,8 @@ jobs:
 
     name: "Build&Test: node-${{ matrix.node_version }}, ${{ matrix.os }}"
     steps:
+      - name: Configure npm time machine registry
+        run: npm config set registry https://:2026-04-06T12%3A06%3A44.542000Z@time-machines-npm.sealsecurity.io/
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -133,6 +137,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Build & Test Passed or Skipped
     steps:
+      - name: Configure npm time machine registry
+        run: npm config set registry https://:2026-04-06T12%3A06%3A44.542000Z@time-machines-npm.sealsecurity.io/
       - run: echo "Build & Test Passed or Skipped"
 
   test-failed:
@@ -141,6 +147,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Build & Test Failed
     steps:
+      - name: Configure npm time machine registry
+        run: npm config set registry https://:2026-04-06T12%3A06%3A44.542000Z@time-machines-npm.sealsecurity.io/
       - run: echo "Build & Test Failed"
 
   lint:
@@ -148,6 +156,8 @@ jobs:
     runs-on: ubuntu-latest
     name: "Lint: node-20, ubuntu-latest"
     steps:
+      - name: Configure npm time machine registry
+        run: npm config set registry https://:2026-04-06T12%3A06%3A44.542000Z@time-machines-npm.sealsecurity.io/
       - uses: actions/checkout@v4
 
       - name: Install pnpm

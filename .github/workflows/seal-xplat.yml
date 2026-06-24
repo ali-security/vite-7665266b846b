@@ -1,0 +1,114 @@
+name: Seal Cross-Platform Tests
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  NODE_OPTIONS: --max-old-space-size=6144
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+  VITEST_SEGFAULT_RETRY: 3
+
+jobs:
+  test-macos:
+    timeout-minutes: 20
+    runs-on: macos-latest
+    name: "Test: node-22, macos"
+    steps:
+      - name: Configure npm time machine registry
+        run: npm config set registry https://:2026-04-06T12%3A06%3A44.542000Z@time-machines-npm.sealsecurity.io/
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+
+      - name: Set node version to 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install deps
+        run: pnpm install
+
+      - name: Set Playwright path and Get playwright version
+        run: |
+          echo "PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/playwright-bin" >> $GITHUB_ENV
+          PLAYWRIGHT_VERSION="$(pnpm ls --depth 0 --json -w playwright-chromium | jq --raw-output '.[0].devDependencies["playwright-chromium"].version')"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright's binary
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-playwright-bin-v1-${{ env.PLAYWRIGHT_VERSION }}
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-bin-v1-
+
+      - name: Install Playwright
+        run: pnpm playwright install chromium
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Test unit
+        run: pnpm run test-unit
+
+      - name: Test serve
+        run: pnpm run test-serve
+
+      - name: Test build
+        run: pnpm run test-build
+
+  test-windows:
+    timeout-minutes: 20
+    runs-on: windows-latest
+    name: "Test: node-22, windows"
+    steps:
+      - name: Configure npm time machine registry
+        run: npm config set registry https://:2026-04-06T12%3A06%3A44.542000Z@time-machines-npm.sealsecurity.io/
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+
+      - name: Set node version to 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install deps
+        run: pnpm install
+
+      - name: Set Playwright path and Get playwright version
+        run: |
+          echo "PLAYWRIGHT_BROWSERS_PATH=$HOME\.cache\playwright-bin" >> $env:GITHUB_ENV
+          $env:PLAYWRIGHT_VERSION="$(pnpm ls --depth 0 --json -w playwright-chromium | jq --raw-output '.[0].devDependencies["playwright-chromium"].version')"
+          echo "PLAYWRIGHT_VERSION=$env:PLAYWRIGHT_VERSION" >> $env:GITHUB_ENV
+
+      - name: Cache Playwright's binary
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-playwright-bin-v1-${{ env.PLAYWRIGHT_VERSION }}
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-bin-v1-
+
+      - name: Install Playwright
+        run: pnpm playwright install chromium
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Test unit
+        run: pnpm run test-unit
+
+      - name: Test serve
+        run: pnpm run test-serve
+
+      - name: Test build
+        run: pnpm run test-build

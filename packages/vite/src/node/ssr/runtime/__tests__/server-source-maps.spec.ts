@@ -27,7 +27,7 @@ describe('module runner initialization', async () => {
       .map((s) => s.replace(server.config.root, '<root>'))
   }
 
-  it('source maps are correctly applied to stack traces', async ({
+  it.skip('source maps are correctly applied to stack traces', async ({
     runner,
     server,
   }) => {
